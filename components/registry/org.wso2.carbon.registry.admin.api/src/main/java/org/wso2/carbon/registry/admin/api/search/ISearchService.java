@@ -119,4 +119,15 @@ public interface ISearchService <SearchResultsBean, AdvancedSearchResultsBean, C
      */
     public void deleteFilter(String filterName) throws RegistryException;
 
+	/**
+	 * This method generates a search query according to parameters passed, and runs this query against the Registry and
+	 * returns matching results.
+	 *
+	 * @param parameters - Bean which contains a 2D array with parameters and their respective values
+	 * @return a bean containing an array of resource data of the results
+	 * @throws RegistryException - if Registry is not available
+	 */
+	public AdvancedSearchResultsBean getSearchTermResults(CustomSearchParameterBean parameters)
+			throws RegistryException;
+
 }

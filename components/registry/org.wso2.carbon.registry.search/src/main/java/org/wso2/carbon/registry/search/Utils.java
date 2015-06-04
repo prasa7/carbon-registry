@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 
 public class Utils {
     private static final Log log = LogFactory.getLog(Utils.class);
@@ -29,6 +30,7 @@ public class Utils {
     private static RegistryService registryService;
     private static ContentSearchService contentSearchService;
     private static AttributeSearchService attributeSearchService;
+    private static TermsSearchService termsSearchService;
 
     public static synchronized void setRegistryService(RegistryService service) {
         registryService = service;
@@ -52,5 +54,23 @@ public class Utils {
 
     public static AttributeSearchService getAttributeSearchService() {
         return attributeSearchService;
+    }
+
+    /**
+     * This method is used to get TermSearchService.
+     *
+     * @return termSearchService
+     */
+    public static TermsSearchService getTermsSearchService() {
+        return termsSearchService;
+    }
+
+    /**
+     * This method is used to set TermSearchService.
+     *
+     * @param termsSearchService TermSearchService
+     */
+    public static void setTermsSearchService(TermsSearchService termsSearchService) {
+        Utils.termsSearchService = termsSearchService;
     }
 }

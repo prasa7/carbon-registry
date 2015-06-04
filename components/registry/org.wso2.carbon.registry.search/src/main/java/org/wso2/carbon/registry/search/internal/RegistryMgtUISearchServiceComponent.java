@@ -28,6 +28,7 @@ import org.wso2.carbon.registry.core.jdbc.queries.QueryProcessorManager;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.indexing.service.ContentSearchService;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
 import org.wso2.carbon.registry.search.beans.CustomSearchParameterBean;
@@ -52,6 +53,9 @@ import java.util.Map;
  *   @scr.reference name="registry.attribute.indexing"
  * interface="org.wso2.carbon.registry.common.AttributeSearchService" cardinality="1..1"
  * policy="dynamic" bind="setAttributeIndexingService" unbind="unsetAttributeIndexingService"
+ * @scr.reference name="registry.term.indexing"
+ * interface="org.wso2.carbon.registry.indexing.service.TermsSearchService" cardinality="1..1"
+ * policy="dynamic" bind="setTermSearchService" unbind="unsetTermSearchService"
  */
 
 public class RegistryMgtUISearchServiceComponent {
@@ -139,5 +143,23 @@ public class RegistryMgtUISearchServiceComponent {
         public ResourceData[] search(Map<String, String> parameters) throws RegistryException {
             return search(MultitenantConstants.SUPER_TENANT_ID, parameters);
         }
+    }
+
+    /**
+     * This method is used to set TermSearchService.
+     *
+     * @param termSearchService TermSearchService
+     */
+    protected void setTermSearchService(TermsSearchService termSearchService) {
+        Utils.setTermsSearchService(termSearchService);
+    }
+
+    /**
+     * This method is used to unset TermSearchService.
+     *
+     * @param termSearchService TermSearchService
+     */
+    protected void unsetTermSearchService(TermsSearchService termSearchService) {
+        Utils.setTermsSearchService(null);
     }
 }

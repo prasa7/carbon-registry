@@ -18,6 +18,7 @@ package org.wso2.carbon.registry.search.beans;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 
 @SuppressWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public class AdvancedSearchResultsBean {
@@ -25,6 +26,8 @@ public class AdvancedSearchResultsBean {
     private ResourceData [] resourceDataList;
 
     protected String errorMessage;
+
+    private TermData[] searchTermsList;
 
     public String getErrorMessage() {
         return errorMessage;
@@ -40,5 +43,23 @@ public class AdvancedSearchResultsBean {
 
     public void setResourceDataList(ResourceData [] resourceDataList) {
         this.resourceDataList = resourceDataList;
+    }
+
+    /**
+     * This method is used to get SearchTerm list.
+     *
+     * @return SearchTerm list
+     */
+    public TermData[] getSearchTermsList() {
+        return searchTermsList;
+    }
+
+    /**
+     * This method is used to get SearchTerm list.
+     *
+     * @param searchTermsList SearchTerm list
+     */
+    public void setSearchTermsList(TermData[] searchTermsList) {
+        this.searchTermsList = searchTermsList;
     }
 }

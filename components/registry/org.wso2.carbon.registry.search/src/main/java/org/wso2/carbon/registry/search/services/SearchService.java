@@ -22,6 +22,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.registry.admin.api.search.ISearchService;
 import org.wso2.carbon.registry.common.AttributeSearchService;
 import org.wso2.carbon.registry.common.ResourceData;
+import org.wso2.carbon.registry.common.TermData;
 import org.wso2.carbon.registry.common.services.RegistryAbstractAdmin;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -30,6 +31,7 @@ import org.wso2.carbon.registry.core.pagination.PaginationUtils;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.RegistryUtils;
 import org.wso2.carbon.registry.indexing.IndexingConstants;
+import org.wso2.carbon.registry.indexing.service.TermsSearchService;
 import org.wso2.carbon.registry.search.Utils;
 import org.wso2.carbon.registry.search.beans.AdvancedSearchResultsBean;
 import org.wso2.carbon.registry.search.beans.CustomSearchParameterBean;
@@ -124,6 +126,50 @@ public class SearchService extends RegistryAbstractAdmin implements
 
         }
         advancedSearchResultsBean.setResourceDataList(new ResourceData[0]);
+        return advancedSearchResultsBean;
+    }
+
+    /**
+     * This method is used to get search term results.
+     *
+     * @param parameters - Bean which contains a 2D array with parameters and their respective values
+     * @return AdvancedSearchResultsBean
+     * @throws RegistryException
+     */
+    public AdvancedSearchResultsBean getSearchTermResults(CustomSearchParameterBean parameters)
+            throws RegistryException {
+        if (parameters == null) {
+            throw new IllegalArgumentException("Invalid arguments supplied as :" + parameters);
+        }
+
+        RegistryUtils.recordStatistics(parameters);
+        AdvancedSearchResultsBean advancedSearchResultsBean = new AdvancedSearchResultsBean();
+        UserRegistry registry = (UserRegistry) getRootRegistry();
+        TermsSearchService termsSearchService = Utils.getTermsSearchService();
+
+        // Get advance search parameter values.
+        String[][] searchParameterValues = parameters.getParameterValues();
+
+        // Map to store advance search attributes values.
+        Map<String, String> advanceSearchAttributes;
+
+        // Validating the values sent.
+        String validationErrorMessage = getValidationErrorMessage(searchParameterValues);
+        if (validationErrorMessage != null && StringUtils.isNotEmpty(validationErrorMessage)) {
+            return SearchUtils.getEmptyResultBeanWithErrorMsg(validationErrorMessage);
+        }
+
+        // No attribute has provide for search.
+        if (allEmpty) {
+            return SearchUtils.getEmptyResultBeanWithErrorMsg(SEARCH_ATTRIBUTES_ALL_EMPTY_MESSAGE);
+        }
+
+        // Add search parameter values to advanceSearchAttributes Map.
+        advanceSearchAttributes = getAdvanceSearchValueMap(searchParameterValues);
+
+        //Add facet values from CustomSearchParameterBean.
+        TermData[] termSearchResults = termsSearchService.search(registry, advanceSearchAttributes);
+        advancedSearchResultsBean.setSearchTermsList(termSearchResults);
         return advancedSearchResultsBean;
     }
 
@@ -286,6 +332,21 @@ public class SearchService extends RegistryAbstractAdmin implements
             } else if (tempParameterValue[0].equals("rightOp") && tempParameterValue[1] != null &&
                     !StringUtils.isEmpty(tempParameterValue[1])) {
                 advanceSearchAttributes.put(IndexingConstants.FIELD_RIGHT_OP, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("facet.field") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FACET_FIELD_NAME, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("facet.limit") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FACET_LIMIT, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("facet.mincount") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FACET_MIN_COUNT, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("facet.sort") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FACET_SORT, tempParameterValue[1]);
+            } else if (tempParameterValue[0].equals("facet.prefix") && tempParameterValue[1] != null &&
+                    !StringUtils.isEmpty(tempParameterValue[1])) {
+                advanceSearchAttributes.put(IndexingConstants.FACET_PREFIX, tempParameterValue[1]);
             }
         }
         return advanceSearchAttributes;
